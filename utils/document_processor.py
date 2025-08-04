@@ -1,11 +1,18 @@
 import os
 import PyPDF2
 from docx import Document
-import pandas as pd
 from langdetect import detect, LangDetectException
 import re
 from typing import List, Dict, Tuple
 import logging
+
+# Try to import pandas, but don't fail if it's not available
+try:
+    import pandas as pd
+    PANDAS_AVAILABLE = True
+except ImportError:
+    PANDAS_AVAILABLE = False
+    logging.warning("pandas not available - Excel and CSV processing will be limited")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,6 +57,10 @@ class DocumentProcessor:
     
     def extract_text_from_excel(self, file_path: str) -> str:
         """Extract text from Excel file."""
+        if not PANDAS_AVAILABLE:
+            logger.warning("pandas not available - cannot process Excel files")
+            return f"Excel file detected but pandas is not available: {os.path.basename(file_path)}"
+        
         try:
             df = pd.read_excel(file_path)
             text = ""
@@ -62,6 +73,10 @@ class DocumentProcessor:
     
     def extract_text_from_csv(self, file_path: str) -> str:
         """Extract text from CSV file."""
+        if not PANDAS_AVAILABLE:
+            logger.warning("pandas not available - cannot process CSV files")
+            return f"CSV file detected but pandas is not available: {os.path.basename(file_path)}"
+        
         try:
             df = pd.read_csv(file_path)
             text = ""

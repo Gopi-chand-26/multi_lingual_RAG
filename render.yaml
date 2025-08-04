@@ -2,7 +2,10 @@ services:
   - type: web
     name: multilingual-rag-system
     env: python
-    buildCommand: pip install -r requirements-deploy.txt
+    pythonVersion: "3.11"
+    buildCommand: |
+      pip install --upgrade pip setuptools wheel
+      pip install -r requirements-simple.txt
     startCommand: python main.py
     envVars:
       - key: GROQ_API_KEY
